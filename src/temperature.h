@@ -7,32 +7,28 @@
 #include <time.h>
 #include <string.h>
 
-enum PowerSupply
-{
-	ETHERNET,
-	BATTERY,
-};
+#define POWER_SUPPLY_ETHERNET 1
+#define POWER_SUPPLY_BATTERY 2
 
-// TODO: Add checksum field
-// FIXME: More precise temperature
 struct TemperatureLog
 {
 	time_t time_marker;
-	int temperature;
-	enum PowerSupply power_supply;
+	int8_t temperature;
+	uint8_t power_supply;
 	uint8_t id;
+	uint8_t checksum;
 };
 
-struct TemperatureLog temperature_log_create(int, enum PowerSupply, time_t);
+struct TemperatureLog temperature_log_create(int8_t, uint8_t, time_t);
 
 char* temperature_log_generate(struct TemperatureLog*);
 
 // Random PowerSupply
-enum PowerSupply power_supply_generate();
+uint8_t power_supply_generate();
 
-// Random temperature in range [20, 120]
-int temperature_generate();
+// Random temperature in range [20, 120] with precision 0.1
+int8_t temperature_generate();
 
-char* power_supply_name(enum PowerSupply);
+char* power_supply_name(uint8_t);
 
 #endif

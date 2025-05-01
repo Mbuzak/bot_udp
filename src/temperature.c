@@ -1,6 +1,6 @@
 #include "temperature.h"
 
-struct TemperatureLog temperature_log_create(int temperature, enum PowerSupply power_supply, time_t time_start)
+struct TemperatureLog temperature_log_create(int8_t temperature, uint8_t power_supply, time_t time_start)
 {
 	struct TemperatureLog temperature_log;
 
@@ -14,12 +14,16 @@ struct TemperatureLog temperature_log_create(int temperature, enum PowerSupply p
 	time_t time_marker = time(NULL) - time_start;
 	temperature_log.time_marker = time_marker;
 
+	// generate checksum
+	uint8_t sum = temperature + id + time_marker + power_supply;
+	temperature_log.checksum = sum;
+
 	return temperature_log;
 }
 
 char* temperature_log_generate(struct TemperatureLog* temperature_log)
 {
-	char* log = malloc(sizeof(char) * 64);
+	char* log = malloc(sizeof(char) * 128);
 
 	strcpy(log, "[Info] ");
 	char id[4];
@@ -27,49 +31,57 @@ char* temperature_log_generate(struct TemperatureLog* temperature_log)
 	sprintf(id, "%d", temperature_log->id);
 	strcat(log, id);
 
-	strcat(log, " Time: ");
+	strcat(log, "\tTime: ");
 	char time_marker[4];
 	sprintf(time_marker, "%ld", temperature_log->time_marker);
 	strcat(log, time_marker);
 
-	char temperature[3];
+	char temperature[5];
 	sprintf(temperature, "%d", temperature_log->temperature);
-	strcat(log, " Temperature: ");
+	strcat(log, "s\tTemperature: ");
 	strcat(log, temperature);
 
-	strcat(log, " Power supply: ");
+	strcat(log, " C\tPower supply: ");
 	strcat(log, power_supply_name(temperature_log->power_supply));
+
+	strcat(log, " \tChecksum: ");
+	char checksum[4];
+	sprintf(checksum, "%d", temperature_log->checksum);
+	strcat(log, checksum);
 
 	return log;
 }
 
-enum PowerSupply power_supply_generate()
+uint8_t power_supply_generate()
 {
 	int choice = rand() % 2;
 	if (choice == 0)
 	{
-		return ETHERNET;
+		return POWER_SUPPLY_ETHERNET;
 	}
 
-	return BATTERY;
+	return POWER_SUPPLY_BATTERY;
 }
 
-int temperature_generate()
+int8_t temperature_generate()
 {
 	int temperature = (rand() % 101) + 20;
-	return temperature;
+	float temperature_precise = (float)(rand() % 10) / 10;
+	temperature += temperature_precise >= .5f ? 1 : 0;
+	
+	return (int8_t)temperature;
 }
 
-char* power_supply_name(enum PowerSupply power_supply)
+char* power_supply_name(uint8_t power_supply)
 {
-	if (power_supply == ETHERNET)
+	if (power_supply == POWER_SUPPLY_ETHERNET)
 	{
 		return "Ethernet";
 	}
-	else if (power_supply == BATTERY)
+	else if (power_supply == POWER_SUPPLY_BATTERY)
 	{
 		return "Battery";
 	}
-	
+
 	return "Not found";
 }
