@@ -23,7 +23,7 @@ struct TemperatureLog temperature_log_create(int8_t temperature, uint8_t power_s
 
 char* temperature_log_generate(struct TemperatureLog* temperature_log)
 {
-	char* log = malloc(sizeof(char) * 128);
+	char* log = malloc(sizeof(char) * LOG_SIZE);
 
 	strcpy(log, "[Info] ");
 	char id[4];
@@ -48,6 +48,7 @@ char* temperature_log_generate(struct TemperatureLog* temperature_log)
 	char checksum[4];
 	sprintf(checksum, "%d", temperature_log->checksum);
 	strcat(log, checksum);
+	strcat(log, "\n");
 
 	return log;
 }
@@ -68,7 +69,7 @@ int8_t temperature_generate()
 	int temperature = (rand() % 101) + 20;
 	float temperature_precise = (float)(rand() % 10) / 10;
 	temperature += temperature_precise >= .5f ? 1 : 0;
-	
+
 	return (int8_t)temperature;
 }
 
@@ -84,4 +85,42 @@ char* power_supply_name(uint8_t power_supply)
 	}
 
 	return "Not found";
+}
+
+int temperature_log_save(struct TemperatureLog* temperature_log, const char* path)
+{
+	char* log = temperature_log_generate(temperature_log);
+
+	FILE* file_log = fopen(path, "a");
+	if (file_log == NULL)
+	{
+		fclose(file_log);
+		free(log);
+
+		return -1;
+	}
+
+	size_t size = string_length(log);
+	fwrite(log, size, 1, file_log);
+	printf("%s", log);
+
+	fclose(file_log);
+	free(log);
+
+	return 0;
+}
+
+size_t string_length(char* log)
+{
+	size_t size = 0;
+	for (int i = 0; i < LOG_SIZE; i++)
+	{
+		if (log[i] == '\0')
+		{
+			break;
+		}
+		++size;
+	}
+
+	return size;
 }

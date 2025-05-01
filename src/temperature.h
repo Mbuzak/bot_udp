@@ -6,9 +6,11 @@
 #include <stdint.h>
 #include <time.h>
 #include <string.h>
+#include <errno.h>
 
 #define POWER_SUPPLY_ETHERNET 1
 #define POWER_SUPPLY_BATTERY 2
+#define LOG_SIZE 128
 
 struct TemperatureLog
 {
@@ -30,5 +32,10 @@ uint8_t power_supply_generate();
 int8_t temperature_generate();
 
 char* power_supply_name(uint8_t);
+
+// Display log and save to file
+int temperature_log_save(struct TemperatureLog*, const char* path);
+
+size_t string_length(char*);
 
 #endif

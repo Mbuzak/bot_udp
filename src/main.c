@@ -25,9 +25,12 @@ int main(int argc, char* argv[])
 		int8_t temperature = temperature_generate();
 		uint8_t power_supply = power_supply_generate();
 		struct TemperatureLog temperature_log = temperature_log_create(temperature, power_supply, time_start);
-		char* log = temperature_log_generate(&temperature_log);
-		printf("%s\n", log);
-		free(log);
+
+		if (temperature_log_save(&temperature_log, log_path) == -1)
+		{
+			printf("[Warning] File could not be open! Errno: %d\n", errno);
+		}
+
 		sleep(log_delay);
 	}
 
