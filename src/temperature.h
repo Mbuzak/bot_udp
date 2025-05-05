@@ -4,9 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
 #include <time.h>
 #include <string.h>
-#include <errno.h>
+#include <pthread.h>
 
 #define POWER_SUPPLY_ETHERNET 1
 #define POWER_SUPPLY_BATTERY 2
@@ -19,6 +20,12 @@ struct TemperatureLog
 	uint8_t power_supply;
 	uint8_t id;
 	uint8_t checksum;
+};
+
+struct LogArgs
+{
+	const char* path;
+	unsigned int delay;
 };
 
 struct TemperatureLog temperature_log_create(int8_t, uint8_t, time_t);
@@ -34,7 +41,8 @@ int8_t temperature_generate();
 char* power_supply_name(uint8_t);
 
 // Display log and save to file
-int temperature_log_save(struct TemperatureLog*, const char* path);
+//void* temperature_log_save(struct TemperatureLog*, const char* path);
+void* temperature_log_save(void*);
 
 size_t string_length(char*);
 

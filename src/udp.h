@@ -15,6 +15,13 @@ struct Server
 	struct sockaddr_in addr;
 };
 
+struct SendArgs
+{
+	struct Server* server;
+	time_t time_start;
+	unsigned int delay;
+};
+
 struct Server* server_init(const char*, unsigned int);
 
 int server_socket_bind(struct Server*);

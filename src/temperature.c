@@ -87,28 +87,6 @@ char* power_supply_name(uint8_t power_supply)
 	return "Not found";
 }
 
-int temperature_log_save(struct TemperatureLog* temperature_log, const char* path)
-{
-	char* log = temperature_log_generate(temperature_log);
-
-	FILE* file_log = fopen(path, "a");
-	if (file_log == NULL)
-	{
-		fclose(file_log);
-		free(log);
-
-		return -1;
-	}
-
-	size_t size = string_length(log);
-	fwrite(log, size, 1, file_log);
-	printf("%s", log);
-
-	fclose(file_log);
-	free(log);
-
-	return 0;
-}
 
 size_t string_length(char* log)
 {
