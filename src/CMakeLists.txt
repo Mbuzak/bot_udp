@@ -1,4 +1,3 @@
-add_executable(${PROJECT_NAME} main.c temperature.c udp.c)
-add_executable(server server.c temperature.c udp.c)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+add_subdirectory(core)
+add_subdirectory(client)
+add_subdirectory(server)

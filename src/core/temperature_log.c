@@ -1,8 +1,8 @@
-#include "temperature.h"
+#include "temperature_log.h"
 
-struct TemperatureLog temperature_log_create(int8_t temperature, uint8_t power_supply, time_t time_start)
+TemperatureLog temperature_log_create(int8_t temperature, uint8_t power_supply, time_t time_start)
 {
-	struct TemperatureLog temperature_log;
+	TemperatureLog temperature_log;
 
 	temperature_log.temperature = temperature;
 
@@ -21,7 +21,7 @@ struct TemperatureLog temperature_log_create(int8_t temperature, uint8_t power_s
 	return temperature_log;
 }
 
-char* temperature_log_generate(struct TemperatureLog* temperature_log)
+char* temperature_log_generate(TemperatureLog* temperature_log)
 {
 	char* log = malloc(sizeof(char) * LOG_SIZE);
 
